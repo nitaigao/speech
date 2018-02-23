@@ -1,0 +1,6 @@
+fvad_free
+fvad_new
+fvad_process
+fvad_reset
+fvad_set_mode
+fvad_set_sample_rate
