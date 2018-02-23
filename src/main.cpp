@@ -6,6 +6,7 @@
 #include "portaudiosystem.h"
 
 #include "snowboy-detect-cxx-compat.h"
+#include "snowboy-vad-cxx-compat.h"
 
 int main() {
   PortAudioSystem::init();
@@ -13,10 +14,12 @@ int main() {
   std::string resourceFileName = "./resources/common.res";
   std::string modelFileName = "./resources/seattle.pmdl";
 
-  Snowboy detector(resourceFileName.c_str(), modelFileName.c_str());
+  SnowboyVad vad(resourceFileName.c_str());
+  vad.SetAudioGain(1.0f);
+
+  SnowboyDetector detector(resourceFileName.c_str(), modelFileName.c_str());
   detector.SetSensitivity("0.5");
   detector.SetAudioGain(1.0f);
-  detector.ApplyFrontend(true);
 
   int bitsPerSample = detector.BitsPerSample();
   int numChannels = detector.NumChannels();
@@ -39,12 +42,24 @@ int main() {
 
   portAudio.startStream();
 
+  int frame = 0;
+
   std::vector<int16_t> buffer;
   while(true) {
     portAudio.read(&buffer);
     if (buffer.size() != 0) {
-      int result = detector.RunDetection(buffer.data(), buffer.size());
-      std::cout << result << std::endl;
+      int detectResult = detector.RunDetection(buffer.data(), buffer.size());
+      bool hotwordDetected = detectResult > 0;
+
+      int vadResult = vad.RunVad(buffer.data(), buffer.size());
+      if (vadResult == 0) {
+        std::cout << "Voice detected " << frame++ << std::endl;
+      }
+
+      bool voiceDetected = vadResult == 0;
+      if (voiceDetected && hotwordDetected) {
+        std::cout << "Hotword detected" << std::endl;
+      }
     }
   }
 

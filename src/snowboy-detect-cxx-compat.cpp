@@ -11,38 +11,38 @@ static const snowboy::SnowboyDetect* c(const void* p) {
   return reinterpret_cast<const snowboy::SnowboyDetect*>(p);
 }
 
-Snowboy::Snowboy(const char* resourceFileName, const char* modelFileName)
+SnowboyDetector::SnowboyDetector(const char* resourceFileName, const char* modelFileName)
     : detector_(new snowboy::SnowboyDetect(resourceFileName, modelFileName)) {
 }
 
-void Snowboy::SetSensitivity(const char* sensitivity) const {
+void SnowboyDetector::SetSensitivity(const char* sensitivity) const {
   c(detector_)->SetSensitivity(sensitivity);
 }
 
-void Snowboy::ApplyFrontend(bool applyFrontend) const {
+void SnowboyDetector::ApplyFrontend(bool applyFrontend) const {
   c(detector_)->ApplyFrontend(applyFrontend);
 }
 
-void Snowboy::SetAudioGain(float audioGain) const {
+void SnowboyDetector::SetAudioGain(float audioGain) const {
   c(detector_)->SetAudioGain(audioGain);
 }
 
-int Snowboy::NumHotWords() const {
+int SnowboyDetector::NumHotWords() const {
   return c(detector_)->NumHotwords();
 }
 
-int Snowboy::SampleRate() const {
+int SnowboyDetector::SampleRate() const {
   return c(detector_)->SampleRate();
 }
 
-int Snowboy::NumChannels() const {
+int SnowboyDetector::NumChannels() const {
   return c(detector_)->NumChannels();
 }
 
-int Snowboy::BitsPerSample() const {
+int SnowboyDetector::BitsPerSample() const {
   return c(detector_)->BitsPerSample();
 }
 
-int Snowboy::RunDetection(const int16_t* data, int num_samples) {
+int SnowboyDetector::RunDetection(const int16_t* data, int num_samples) {
   return c(detector_)->RunDetection(data, num_samples);
 }

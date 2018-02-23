@@ -4,13 +4,11 @@
 
 #include "snowboy-detect.h"
 
-class SnowboyDetector {
+class SnowboyVad {
 
  public:
 
-  SnowboyDetector(const char* resourceFileName, const char* modelFileName);
-
-  void SetSensitivity(const char* sensitivity) const;
+  SnowboyVad(const char* resourceFileName);
 
   void SetAudioGain(float audioGain) const;
 
@@ -22,9 +20,7 @@ class SnowboyDetector {
 
   int BitsPerSample() const;
 
-  int NumHotWords() const;
-
-  int RunDetection(const int16_t* data, int num_samples);
+  int RunVad(const int16_t* data, int numSamples, bool isEnd = false);
 
  private:
 
