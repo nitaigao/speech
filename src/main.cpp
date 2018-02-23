@@ -5,11 +5,16 @@
 
 #include "portaudiosystem.h"
 
+extern "C" {
+  #include "fvad.h"
+}
+
 #include "snowboy-detect-cxx-compat.h"
 #include "snowboy-vad-cxx-compat.h"
 
 int main() {
   PortAudioSystem::init();
+  Fvad* fvad = fvad_new();
 
   std::string resourceFileName = "./resources/common.res";
   std::string modelFileName = "./resources/seattle.pmdl";
@@ -25,6 +30,18 @@ int main() {
   int numChannels = detector.NumChannels();
   int sampleRate = detector.SampleRate();
   int numHotWords = detector.NumHotWords();
+
+  int setfVadSampleRateResult = fvad_set_sample_rate(fvad, sampleRate);
+
+  if (setfVadSampleRateResult == -1) {
+    std::cout << "Unable to set fvad sample rate" << std::endl;
+  }
+
+  int setfVadModeResult = fvad_set_mode(fvad, 3);
+
+  if (setfVadModeResult == -1) {
+    std::cout << "Unable to set fvad mode" << std::endl;
+  }
 
   std::clog << "BitsPerSample: " << bitsPerSample << std::endl;
   std::clog << "NumChannels: " << numChannels << std::endl;
@@ -50,15 +67,16 @@ int main() {
     if (buffer.size() != 0) {
       int detectResult = detector.RunDetection(buffer.data(), buffer.size());
       bool hotwordDetected = detectResult > 0;
-
-      int vadResult = vad.RunVad(buffer.data(), buffer.size());
-      if (vadResult == 0) {
-        std::cout << "Voice detected " << frame++ << std::endl;
+      const int16_t * temp = buffer.data();
+      bool fVadDetectedVoice = false;
+      for(int i = 0, ms = 0; i < buffer.size(); i += 160, ms += 10)
+      {
+        int isActive = fvad_process(fvad, temp, 160); //10 ms window
+        fVadDetectedVoice = fVadDetectedVoice || isActive == 1;
+        temp = temp + 160; // processed 160 samples (320 bytes)
       }
-
-      bool voiceDetected = vadResult == 0;
-      if (voiceDetected && hotwordDetected) {
-        std::cout << "Hotword detected" << std::endl;
+      if (hotwordDetected && fVadDetectedVoice) {
+        std::clog << "hotword detected" << std::endl;
       }
     }
   }

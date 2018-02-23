@@ -7,3 +7,13 @@ bin/*
 
 # Ignore Mac specific files
 .DS_Store
+*.o
+*.log
+*.trs
+*_unittest
+.libs
+.deps
+*.la
+*.lo
+*.Po
+*.result

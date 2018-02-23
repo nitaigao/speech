@@ -7,10 +7,6 @@ static snowboy::SnowboyVad* c(void* p) {
   return reinterpret_cast<snowboy::SnowboyVad*>(p);
 }
 
-static const snowboy::SnowboyVad* c(const void* p) {
-  return reinterpret_cast<const snowboy::SnowboyVad*>(p);
-}
-
 SnowboyVad::SnowboyVad(const char* resourceFileName)
     : detector_(new snowboy::SnowboyVad(resourceFileName)) {
 }

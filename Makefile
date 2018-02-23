@@ -7,10 +7,11 @@ TARGET := $(TARGET_DIR)/speech
 
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILD_DIR)/%,$(SOURCES:.$(SRCEXT)=.o)) ./lib/snowboy/lib/libsnowboy-detect.a lib/portaudio/install/lib/libportaudio.a
+STATIC_LIB := ./lib/snowboy/lib/libsnowboy-detect.a lib/portaudio/install/lib/libportaudio.a
+OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILD_DIR)/%,$(SOURCES:.$(SRCEXT)=.o)) $(STATIC_LIB)
 CFLAGS := -g -Wall -std=c++17 -fPIC -msse -msse2
-LIB := -L lib -pthread -lportaudio -lcblas -lasound
-INC := -I include -I ./lib/snowboy/include -I lib/portaudio/install/include
+LIB := -pthread -lportaudio -lcblas -lasound -L./lib/libfvad/src/.libs -lfvad
+INC := -I include -I ./lib/snowboy/include -I lib/portaudio/install/include -I lib/libfvad/include
 COPY_FILES = common.res snowboy.umdl
 
 all: $(TARGET) $(COPY_FILES)
