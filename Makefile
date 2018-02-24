@@ -5,13 +5,13 @@ BUILD_DIR := build
 TARGET_DIR := bin
 TARGET := $(TARGET_DIR)/speech
 
-SRCEXT := cpp
+SRCEXT := cc
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 STATIC_LIB := ./lib/snowboy/lib/libsnowboy-detect.a lib/portaudio/install/lib/libportaudio.a
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILD_DIR)/%,$(SOURCES:.$(SRCEXT)=.o)) $(STATIC_LIB)
-CFLAGS := -g -Wall -std=c++17 -fPIC -msse -msse2
-LIB := -pthread -lportaudio -lcblas -lasound -L./lib/libfvad/src/.libs -lfvad
-INC := -I include -I ./lib/snowboy/include -I lib/portaudio/install/include -I lib/libfvad/include
+CFLAGS := -g -Wall -std=c++11 -msse -msse2
+LIB := -pthread -lportaudio -lprotobuf -lgrpc++ -lcblas -lasound -L./lib/libfvad/src/.libs -lfvad
+INC := -I include -I ./lib/snowboy/include -I lib/portaudio/install/include -I lib/libfvad/include -Ilib/googleapis
 COPY_FILES = common.res snowboy.umdl
 
 all: $(TARGET) $(COPY_FILES)
@@ -27,6 +27,7 @@ $(TARGET): $(OBJECTS)
 
 $(BUILD_DIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(basename $@)
 	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:
