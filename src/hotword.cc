@@ -16,6 +16,7 @@ bool Hotword::init(const std::string& sensitivity, float audioGain) {
   int bitsPerSample = detector_.BitsPerSample();
   int numChannels = detector_.NumChannels();
   int sampleRate = detector_.SampleRate();
+  detector_.ApplyFrontend(false);
 
   std::clog << "BitsPerSample: " << bitsPerSample << std::endl;
   std::clog << "NumChannels: " << numChannels << std::endl;
